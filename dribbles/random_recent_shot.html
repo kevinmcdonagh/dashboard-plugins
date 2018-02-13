@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Upcoming Events</title>
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jribbble@2.0.4/dist/jribbble.min.js"></script>
+	<script>
+		var dribbleTeam = {name:'?', followers:'?'};
+		var DRIBBLE_APP_TOKEN = "!!!!!!!_PUT_AN_ACCESS_TOKEN_HERE_!!!!!!!";
+		
+		function success(apiResponse) {
+			var html = [];  
+			var shotNo = getRandomRecentShotNo();
+		
+			$.jribbble.shots(4173710).then(function(shot) {
+				dribbleTeam.name = shot.team.name;
+				dribbleTeam.followers = shot.team.followers_count;
+			});
+		
+			$.jribbble.teams('novoda').shots({'per_page':'1', 'page': + shotNo , 'sort':'recent', 'timeframe':'ever'}).then(function(res) {
+
+				if ( window.dribbleTeam.name != '?' ) {
+					html.push('<h1>' + window.dribbleTeam.name +' - ' + window.dribbleTeam.followers +' Followers</h1>');
+				}
+
+				res.forEach(function(shot) {
+					html.push('<img src="' + shot.images.hidpi + '" width="800" height="600"   >');
+					html.push('<h2>' + shot.title+ '</h2>');
+					html.push('<h3>' + shot.user.name +', '+ jQuery.format.prettyDate(shot.created_at) +'</h3>');	 
+					html.push('<h3>' + String.fromCharCode('\u03A9') + shot.likes_count +' \u2764</h3>');
+					html.push('<h3>' + shot.views_count +' views </h3>');
+				});
+  
+				$('.shot').html(html.join('')); 
+		  
+			});
+		};
+
+		function error(jqxhr) {
+			html.push('<h1>Novoda Dribble currently unavailable</h2>');
+			$('.shot').html(html.join(''));
+		};
+	
+		function printShot(html) {
+			if ( window.dribbleTeam.name != '?' ) {
+				html.push('<h1>' + window.dribbleTeam.name +' - ' + window.dribbleTeam.followers +' Followers</h1>');
+			}
+		};
+	
+		function getRandomRecentShotNo() {
+      		var minNumber = 0;
+			var maxNumber = 4;
+			return Math.floor(Math.random() * (maxNumber - minNumber + 1) + minNumber);
+		};
+	
+		function printTxt() {
+			html.push('<h1>Novoda Dribble currently unavailable</h2>');
+			$('.shot').html(html.join(''));
+		};
+	
+		$.jribbble.setToken(DRIBBLE_APP_TOKEN);
+		$.jribbble.shots().then(success, error);
+ 	</script>
+</head>
+<body>
+	<div class="shot"></div>
+</body>
+</html>

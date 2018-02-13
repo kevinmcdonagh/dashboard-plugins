@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Upcoming Events</title>
+	<script src="./jquery-3.3.1.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./jribbble.min.js"></script>
+  <script>
+	function success(apiResponse) {
+		var DRIBBLE_APP_TOKEN = "!!!!!!!_PUT_AN_ACCESS_TOKEN_HERE_!!!!!!!";
+		
+		$.jribbble.teams('novoda').shots({'per_page':'5', 'sort':'views', 'timeframe':'ever'}).then(function(res) {
+
+		  var html = [];  
+		  res.forEach(function(shot) {
+		    html.push('<li class="shots--shot">');
+		    html.push('<a href="' + shot.html_url + '" target="_blank">');
+		    html.push('<img src="' + shot.images.normal + '">');
+		    html.push('</a></li>');
+		  });
+  
+		  $('.shots').html(html.join(''));
+		});
+	};
+
+    function error(jqxhr) {
+		html.push('<h1>Novoda Dribble currently unavailable</h2>');
+		$('.shot').html(html.join(''));
+    };
+	
+    $.jribbble.setToken(DRIBBLE_APP_TOKEN);
+    $.jribbble.shots().then(success, error);
+  </script>
+</head>
+<body>
+	<ul class="shots"></ul>
+</body>
+</html>
